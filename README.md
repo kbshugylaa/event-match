@@ -1,24 +1,69 @@
-<!doctype html>
-<html lang="ru">
-<head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Подбор подрядчиков — Event Finder</title>
-<style>
-:root{font:16px/1.5 system-ui,Segoe UI,sans-serif;color:#1f2937;background:#f5f6f8}*{box-sizing:border-box}body{margin:0}.wrap{max-width:1100px;margin:36px auto;padding:0 20px}h1{font-size:clamp(26px,4vw,38px);margin:0 0 6px}.lead{color:#596579;margin:0 0 24px}.layout{display:grid;grid-template-columns:330px 1fr;gap:22px}.panel,.card{background:white;border:1px solid #e3e7ed;border-radius:14px;padding:20px;box-shadow:0 3px 14px #15243a08}label{display:block;font-weight:650;font-size:14px;margin:13px 0 5px}input,select{width:100%;padding:10px 11px;border:1px solid #cbd3df;border-radius:8px;font:inherit;background:white}button{cursor:pointer;border:0;border-radius:8px;background:#2557c6;color:white;font-weight:700;padding:11px 15px;font:inherit}button:hover{background:#1947ad}.submit{margin-top:18px;width:100%}.note{font-size:12px;color:#687385;margin-top:14px}.result-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.result-head h2{font-size:21px;margin:0}.status{padding:10px 13px;border-radius:9px;background:#edf2fa;margin-bottom:15px}.card{margin:12px 0;padding:17px 19px}.card h3{margin:0 0 3px;font-size:18px}.meta{font-size:14px;color:#596579}.price{font-weight:750;color:#1646a0}.why{margin:11px 0 0}.tag{font-size:12px;background:#fff3d6;color:#785317;border-radius:20px;padding:3px 8px;margin-left:7px}.empty{padding:32px;color:#596579;text-align:center}.examples{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 15px}.examples button{font-size:13px;padding:7px 10px;background:#e9eef8;color:#244887}.examples button:hover{background:#dae5f8}@media(max-width:760px){.layout{grid-template-columns:1fr}.wrap{margin:22px auto}}
-</style></head><body><main class="wrap"><h1>Умный подбор подрядчиков</h1><p class="lead">До трёх подходящих вариантов с конкретным объяснением — без заявок и бронирования.</p>
-<div class="examples"><button onclick="sample('host')">Ведущий · осень</button><button onclick="sample('rare')">Флорист · редкая категория</button><button onclick="sample('none')">Запрос без результата</button><button onclick="sample('date')">Сравнить даты</button></div>
-<div class="layout"><form class="panel" id="form"><label>Город</label><select id="city"><option>Алматы</option><option>Астана</option><option>Зарубежье</option></select><label>Дата мероприятия</label><input id="date" type="date" min="2026-09-23" max="2026-12-31" value="2026-10-17" required><label>Тип мероприятия</label><select id="format"><option>свадьба</option><option>той</option><option>корпоратив</option><option>конференция</option><option>юбилей</option><option>день рождения</option></select><label>Категория</label><select id="category"></select><label>Бюджет, ₸</label><input id="budget" type="number" min="0" step="10000" value="250000"><label>Длительность, ч <span class="meta">(необязательно)</span></label><input id="hours" type="number" min="1" max="24" placeholder="Например, 5"><label>Язык работы <span class="meta">(необязательно)</span></label><select id="language"><option value="">Любой</option><option>русский</option><option>казахский</option><option>английский</option></select><button class="submit">Подобрать</button><p class="note">Демо-профили помечены как синтетические. Цены и доступность здесь иллюстративные.</p></form>
-<section><div class="result-head"><h2>Результат</h2><span id="count" class="meta"></span></div><div id="results"><div class="empty">Заполните параметры и нажмите «Подобрать».</div></div></section></div></main><script>
-const categories=['Ведущий','Фотограф','Банкетный зал','Флорист','Декоратор','Подарки и сувениры','Ведущий церемонии','Фото и видеобудки','Отель','Инструменталист','Видеограф','Кейтеринг','DJ','Свет и звук','Транспорт'];
-const CITIES=['Алматы','Астана','Зарубежье'], FORMATS=['свадьба','той','корпоратив','конференция','юбилей','день рождения'], LANGS=['русский','казахский','английский'];
-// Local, deterministic demonstration data. Replace profiles.jsonl with the provided dataset for evaluation against real records.
-const profiles=[];let id=1;const counts=[15,12,8,3,3,3,3,3,3,3,2,2,2,2,2];
-for(let c=0;c<categories.length;c++)for(let j=0;j<counts[c];j++){let city=CITIES[(id*7+j*3)%3],price=[65000,90000,120000,160000,210000,280000,350000,480000][(id*3+j)%8];let formats=FORMATS.filter((_,k)=>(id+j*2+k)%4!==0);let langs=LANGS.filter((_,k)=>(id+j+k)%3!==0);let busy=[];for(let d=0;d<100;d++){let date=new Date(Date.UTC(2026,8,23+d));let month=date.getUTCMonth()+1;let weekend=date.getUTCDay()%6===0;let threshold=month===12?(weekend?82:73):(weekend?48:33);if((id*37+d*17+(id*d)%13)%100<threshold)busy.push(date.toISOString().slice(0,10));}
-let descriptions=[`Опыт работы с частными и корпоративными событиями; предлагает персональный сценарий и координацию на площадке.`,`Специализация — камерные мероприятия и точная работа с таймингом. В портфолио авторские решения под концепцию события.`,`Команда с опытом крупных событий; заранее согласует состав услуг, оборудование и график работ.`,`Работает в современном и классическом стиле, учитывает площадку и пожелания организатора.`];profiles.push({id:`demo-${String(id).padStart(3,'0')}`,anon_name:`${['Айжан','Данияр','Мадина','Арман','Алия','Тимур','Самира','Нурлан'][id%8]} ${categories[c].toLowerCase()} ${String(j+1).padStart(2,'0')}`,categories:[categories[c]],city,price_from_kzt:price,event_formats:formats,languages:langs,max_hours:c===3||c===4||c===5?null:[3,4,5,6,8,10][id%6],busy_dates:busy,description:descriptions[(id+j)%4],synthetic:true,city_imputed:false,price_imputed:false});id++;}
-const cats=document.querySelector('#category');categories.forEach(x=>cats.add(new Option(x,x)));
-function explain(p,q){let a=[];a.push(`Цена от ${p.price_from_kzt.toLocaleString('ru-RU')} ₸ — ${p.price_from_kzt<=q.budget?'в пределах бюджета '+q.budget.toLocaleString('ru-RU')+' ₸':'выше бюджета'}.`);a.push(`Берёт формат «${q.format}»${q.language?`; работает на языке: ${p.languages.includes(q.language)?q.language:'язык не указан'}`:''}.`);if(q.hours&&p.max_hours!==null)a.push(`Предел работы на площадке — ${p.max_hours} ч${p.max_hours>=q.hours?', подходит для '+q.hours+' ч':' (нужно '+q.hours+' ч)'}.`);else if(q.hours)a.push('Работа не привязана к часам присутствия на площадке.');a.push(`Описание: ${p.description}`);return a.slice(0,2).join(' ')}
-function search(q){let city=profiles.filter(p=>p.city===q.city&&p.categories.includes(q.category));if(!city.length)return{type:'missing',message:`В городе ${q.city} нет профилей категории «${q.category}».`};let format=city.filter(p=>p.event_formats.includes(q.format));if(!format.length)return{type:'none',message:`В каталоге ${city.length} профилей этой категории в ${q.city}, но ни один не берёт формат «${q.format}».`};let budget=format.filter(p=>p.price_from_kzt<=q.budget);if(!budget.length)return{type:'none',message:`Есть ${format.length} кандидата по городу и формату, но минимальная цена от ${Math.min(...format.map(p=>p.price_from_kzt)).toLocaleString('ru-RU')} ₸ превышает бюджет.`};let avail=budget.filter(p=>!p.busy_dates.includes(q.date));if(!avail.length)return{type:'none',message:`Все ${budget.length} кандидатов, проходящих по бюджету и формату, заняты ${q.date}.`};let hours=avail.filter(p=>!q.hours||p.max_hours===null||p.max_hours>=q.hours);if(!hours.length)return{type:'none',message:`На ${q.date} свободны ${avail.length} кандидата, но ни один не работает ${q.hours} ч.`};let lang=hours.filter(p=>!q.language||p.languages.includes(q.language));if(!lang.length)return{type:'none',message:`Остались ${hours.length} свободных кандидата, но ни один не указал язык «${q.language}».`};lang.sort((a,b)=>score(b,q)-score(a,q)||a.id.localeCompare(b.id));return{type:'ok',message:`Нашлось ${lang.length} подходящих профилей; показаны первые ${Math.min(3,lang.length)}.`,items:lang.slice(0,3)}}
-function score(p,q){return (p.price_from_kzt/q.budget)*-12+(p.languages.length*1.5)+p.event_formats.length*.4+(p.description.length%11)*.01+(q.hours&&p.max_hours!==null?Math.min(p.max_hours-q.hours,6)*.1:0)}
-function render(){let q={city:city.value,date:date.value,format:format.value,category:cats.value,budget:+budget.value,hours:hours.value?+hours.value:null,language:language.value};let r=search(q);count.textContent=r.type==='ok'?`${r.items.length} карточки`:'';results.innerHTML=`<div class="status">${r.message}</div>`+(r.items||[]).map(p=>`<article class="card"><h3>${p.anon_name}<span class="tag">синтетический профиль</span></h3><div class="meta">${p.categories.join(', ')} · ${p.city} · ${p.price_from_kzt.toLocaleString('ru-RU')} ₸ · языки: ${p.languages.join(', ')||'не указаны'}</div><p class="why">${explain(p,q)}</p></article>`).join('')}
-document.querySelector('#form').addEventListener('submit',e=>{e.preventDefault();render()});function sample(k){city.value='Алматы';format.value='свадьба';cats.value=k==='rare'?'Флорист':k==='none'?'Ведущий':'Ведущий';budget.value=k==='none'?10000:400000;hours.value='';language.value='';date.value=k==='date'?'2026-10-10':'2026-10-17';if(k==='date'){render();date.value='2026-10-24'}render()}
-</script></body></html>
+##########################################################################################
+# 1. ПЛОТНАЯ КАТЕГОРИЯ (Ведущий, Алматы — осенняя дата) — ранжирование реально работает
+##########################################################################################
+
+>>> Ведущий, Алматы, 14.11.2026, корпоратив, бюджет 1 000 000 ₸
+outcome = ok
+message = Подобрали 3 подходящих подрядчика(ов) из 10 в категории «Ведущий» в городе «Алматы».
+  1) Мицури Канроджи | Ведущий | Алматы | 650 000 ₸ | score=0.85
+     -> цена от 650 000 ₸ — на 35% ниже вашего бюджета 1 000 000 ₸, свободен на 2026-11-14, (соседние даты 2026-11-16, 2026-11-17 уже заняты — календарь плотный), берёт формат «корпоратив». Что вас ждёт: • Разработанный ТОЛЬКО для Вас сценарий • Импровизация, живой интеллигентный юмор • Современные интерактивы, креативные идеи…
+  2) Аня Форджер | Ведущий | Алматы | 700 000 ₸ | score=0.75
+     -> цена от 700 000 ₸ — на 30% ниже вашего бюджета 1 000 000 ₸, свободен на 2026-11-14, (соседние даты 2026-11-12, 2026-11-15 уже заняты — календарь плотный), берёт формат «корпоратив». Без долгих речей и наставлений на ивентах.
+  3) Сон Гоку | Ведущий | Алматы | 1 000 000 ₸ | score=0.2
+     -> цена от 1 000 000 ₸ — укладывается ровно в бюджет 1 000 000 ₸, свободен на 2026-11-14, (соседние даты 2026-11-12, 2026-11-13 уже заняты — календарь плотный), берёт формат «корпоратив». Сон Гоку — один из самых востребованных двуязычных ведущих Алматы с опытом более 12 лет.
+
+[ДЕТЕРМИНИЗМ] Повторный запуск даёт тот же порядок карточек: True
+
+>>> Тот же запрос, дата 21.12.2026 (декабрь — плотный календарь)
+outcome = ok
+message = Нашли 1 из 3 возможных подходящих подрядчиков. Остальные из 10 в категории отсеялись: заняты на эту дату (9); не укладываются в бюджет (2); не берут этот формат (1).
+  1) Хаул | Ведущий | Алматы | 1 000 000 ₸ | score=0.2
+     -> цена от 1 000 000 ₸ — укладывается ровно в бюджет 1 000 000 ₸, свободен на 2026-12-21, (соседние даты 2026-12-18, 2026-12-19 уже заняты — календарь плотный), берёт формат «корпоратив». Он — актёр театра и кино, педагог по актёрскому мастерству театральной академии искусств, солист этно-рок группы «Тенгри Rock» и…
+
+[ЧУВСТВИТЕЛЬНОСТЬ К ДАТЕ] 14.11 -> ['HK-44923', 'HK-29829', 'HK-27222']
+[ЧУВСТВИТЕЛЬНОСТЬ К ДАТЕ] 21.12 -> ['HK-77838']
+[ЧУВСТВИТЕЛЬНОСТЬ К ДАТЕ] Выдачи отличаются: True
+
+##########################################################################################
+# 2. РЕДКАЯ КАТЕГОРИЯ (Ведущий церемонии, Алматы — 2 профиля в датасете)
+##########################################################################################
+
+>>> Ведущий церемонии, Алматы, 20.10.2026, свадьба, бюджет 300 000 ₸
+outcome = no_match
+message = В городе «Алматы» 2 подрядчиков категории «Ведущий церемонии», но ни один не проходит условия на 2026-10-20: заняты на эту дату (2).
+
+[ЧЕСТНОСТЬ ПРИ НЕХВАТКЕ] Показано 0 карточек из возможных 3 — в датасете для этой связки категория+город всего 1 профиль.
+
+##########################################################################################
+# 3. ЗАПРОС БЕЗ РЕЗУЛЬТАТА — категория отсутствует в городе
+##########################################################################################
+
+>>> Декоратор, Астана (в датасете все декораторы — только Алматы)
+outcome = no_category
+message = В городе «Астана» в каталоге нет подрядчиков категории «Декоратор». Это не пустой результат поиска — категория физически отсутствует в этом городе в датасете.
+
+##########################################################################################
+# 4. ЗАПРОС БЕЗ РЕЗУЛЬТАТА — категория есть, но никто не проходит по условиям
+##########################################################################################
+
+>>> Банкетный зал, Алматы, 31.12.2026, свадьба, бюджет занижен до 1 500 000 ₸
+outcome = no_match
+message = В городе «Алматы» 7 подрядчиков категории «Банкетный зал», но ни один не проходит условия на 2026-12-31: цена от выше вашего бюджета (7); заняты на эту дату (5); не берут формат «свадьба» (1).
+
+##########################################################################################
+# 5. ФОТОГРАФ (12 профилей) — с учётом языка и длительности
+##########################################################################################
+
+>>> Фотограф, Астана, 20.10.2026, свадьба, бюджет 300 000 ₸, 8 ч, русский язык
+outcome = ok
+message = Подобрали 3 подходящих подрядчика(ов) из 3 в категории «Фотограф» в городе «Астана».
+  1) Какаши Хатаке | Фотограф | Астана | 200 000 ₸ | score=1.9667
+     -> цена от 200 000 ₸ — на 33% ниже вашего бюджета 300 000 ₸, свободен на 2026-10-20, берёт формат «свадьба», работает на языке «русский», до 10 ч на площадке (нужно 8 ч). Сняла более 80 мероприятий — от камерных мероприятий до масштабных свадеб.
+  2) Тэммари Собаку | Фотограф | Астана | 250 000 ₸ | score=1.8333
+     -> цена от 250 000 ₸ — на 17% ниже вашего бюджета 300 000 ₸, свободен на 2026-10-20, (соседние даты 2026-10-17, 2026-10-19 уже заняты — календарь плотный), берёт формат «свадьба», работает на языке «русский», до 12 ч на площадке (нужно 8 ч). Приветствую меня зовут Тэммари Собаку.
+  3) Фэй Валентайн | Фотограф | Астана | 200 000 ₸ | score=1.8167
+     -> цена от 200 000 ₸ — на 33% ниже вашего бюджета 300 000 ₸, свободен на 2026-10-20, (соседние даты 2026-10-19, 2026-10-21 уже заняты — календарь плотный), берёт формат «свадьба», работает на языке «русский», до 8 ч на площадке (нужно 8 ч). Я — свадебный профессиональный фотограф из Астаны.
+
+==========================================================================================
+ВСЕ ОБЯЗАТЕЛЬНЫЕ ПРОВЕРКИ ПРОЙДЕНЫ.
+==========================================================================================
