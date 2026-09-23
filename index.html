@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Contractor — подбор подрядчиков</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header class="navbar">
+    <div class="logo">
+        <span>SC</span>
+        Smart Contractor
+    </div>
+
+    <button class="login-btn" onclick="openLogin()">
+        Войти
+    </button>
+</header>
+
+<main>
+
+    <!-- HERO -->
+    <section class="hero" id="hero">
+        <div class="hero-content">
+
+            <div class="badge">AI-подбор подрядчиков</div>
+
+            <h1>
+                Найдите подходящего<br>
+                <span>подрядчика</span> для события
+            </h1>
+
+            <p>
+                Smart Contractor анализирует каталог подрядчиков
+                и показывает до 3 подходящих вариантов с понятным
+                объяснением, почему они подходят именно вам.
+            </p>
+
+            <button class="main-btn" onclick="openLogin()">
+                Начать подбор →
+            </button>
+
+            <div class="features">
+                <div>
+                    <b>66+</b>
+                    <span>профилей</span>
+                </div>
+
+                <div>
+                    <b>3</b>
+                    <span>лучших кандидата</span>
+                </div>
+
+                <div>
+                    <b>100%</b>
+                    <span>объяснимый подбор</span>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="hero-card">
+
+            <div class="mini-header">
+                <span>Пример подбора</span>
+                <span class="online">● Online</span>
+            </div>
+
+            <div class="search-info">
+                <div>
+                    <small>Город</small>
+                    <b>Алматы</b>
+                </div>
+
+                <div>
+                    <small>Мероприятие</small>
+                    <b>Той</b>
+                </div>
+
+                <div>
+                    <small>Бюджет</small>
+                    <b>150 000 ₸</b>
+                </div>
+            </div>
+
+            <div class="contractor">
+                <div class="avatar">А</div>
+
+                <div class="contractor-info">
+                    <b>Айдос</b>
+                    <span>Ведущий · Алматы</span>
+                </div>
+
+                <div class="match">Подходит</div>
+            </div>
+
+            <div class="reason">
+                <b>Почему здесь?</b>
+                <p>
+                    Работает с той, подходит по бюджету
+                    и свободен на выбранную дату.
+                </p>
+            </div>
+
+        </div>
+    </section>
+
+
+    <!-- HOW IT WORKS -->
+    <section class="section">
+        <div class="section-title">
+            <span>Как это работает</span>
+            <h2>От запроса до подрядчика — за несколько секунд</h2>
+        </div>
+
+        <div class="steps">
+
+            <div class="step">
+                <div class="step-number">01</div>
+                <h3>Введите параметры</h3>
+                <p>
+                    Укажите город, дату, формат мероприятия,
+                    категорию и бюджет.
+                </p>
+            </div>
+
+            <div class="step">
+                <div class="step-number">02</div>
+                <h3>Система проверит каталог</h3>
+                <p>
+                    Мы исключим занятых подрядчиков и тех,
+                    кто не подходит по условиям.
+                </p>
+            </div>
+
+            <div class="step">
+                <div class="step-number">03</div>
+                <h3>Получите объяснение</h3>
+                <p>
+                    До 3 кандидатов и конкретная причина,
+                    почему каждый из них подходит.
+                </p>
+            </div>
+
+        </div>
+    </section>
+
+
+    <!-- LOGIN MODAL -->
+    <div class="modal" id="loginModal">
+
+        <div class="modal-box">
+
+            <button class="close" onclick="closeLogin()">×</button>
+
+            <div id="phoneStep">
+
+                <div class="modal-icon">📱</div>
+
+                <h2>Войти в Smart Contractor</h2>
+
+                <p>
+                    Введите номер телефона, чтобы продолжить
+                </p>
+
+                <label>Номер телефона</label>
+
+                <div class="phone-input">
+                    <span>+7</span>
+                    <input
+                        id="phone"
+                        type="tel"
+                        maxlength="10"
+                        placeholder="700 123 45 67"
+                    >
+                </div>
+
+                <button class="main-btn full" onclick="sendCode()">
+                    Получить код
+                </button>
+
+                <small>
+                    Продолжая, вы соглашаетесь с условиями использования.
+                </small>
+
+            </div>
+
+
+            <div id="codeStep" style="display:none">
+
+                <div class="modal-icon">✉️</div>
+
+                <h2>Подтвердите номер</h2>
+
+                <p>
+                    Мы отправили код подтверждения на
+                    <b id="phoneDisplay"></b>
+                </p>
+
+                <input
+                    class="code-input"
+                    id="code"
+                    maxlength="4"
+                    placeholder="0000"
+                >
+
+                <button class="main-btn full" onclick="verifyCode()">
+                    Подтвердить
+                </button>
+
+                <button class="back-btn" onclick="backToPhone()">
+                    ← Изменить номер
+                </button>
+
+                <small class="demo-code">
+                    Demo-код: 1234
+                </small>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- SEARCH PAGE -->
+    <section class="search-page" id="searchPage">
+
+        <div class="search-container">
+
+            <div class="search-title">
+                <span class="badge">Smart matching</span>
+
+                <h1>
+                    Найдём подрядчика<br>
+                    под ваше мероприятие
+                </h1>
+
+                <p>
+                    Заполните параметры заказа — система проверит
+                    доступность и соответствие подрядчиков.
+                </p>
+            </div>
+
+
+            <div class="form-card">
+
+                <div class="form-grid">
+
+                    <div class="field">
+                        <label>Город</label>
+                        <select id="city">
+                            <option>Алматы</option>
+                            <option>Астана</option>
+                            <option>Зарубежье</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label>Дата мероприятия</label>
+                        <input
+                            id="date"
+                            type="date"
+                            value="2026-11-14"
+                        >
+                    </div>
+
+                    <div class="field">
+                        <label>Тип мероприятия</label>
+                        <select id="event">
+                            <option>Той</option>
+                            <option>Свадьба</option>
+                            <option>Корпоратив</option>
+                            <option>Конференция</option>
+                            <option>Юбилей</option>
+                            <option>День рождения</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label>Категория</label>
+                        <select id="category">
+                            <option>Ведущий</option>
+                            <option>Фотограф</option>
+                            <option>Банкетный зал</option>
+                            <option>Флорист</option>
+                            <option>Декоратор</option>
+                            <option>Подарки и сувениры</option>
+                            <option>Ведущий церемонии</option>
+                            <option>Фото и видеобудки</option>
+                            <option>Отель</option>
+                            <option>Инструменталист</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label>Бюджет, ₸</label>
+                        <input
+                            id="budget"
+                            type="number"
+                            placeholder="150000"
+                            value="150000"
+                        >
+                    </div>
+
+                    <div class="field">
+                        <label>Длительность, часов</label>
+                        <input
+                            id="hours"
+                            type="number"
+                            placeholder="4"
+                            value="4"
+                        >
+                    </div>
+
+                    <div class="field">
+                        <label>Язык</label>
+                        <select id="language">
+                            <option value="">Не важно</option>
+                            <option>Русский</option>
+                            <option>Казахский</option>
+                            <option>Английский</option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <button
+                    class="main-btn search-btn"
+                    onclick="findContractors()"
+                >
+                    Найти подрядчиков →
+                </button>
+
+            </div>
+
+
+            <div id="results"></div>
+
+        </div>
+
+    </section>
+
+</main>
+
+<script src="script.js"></script>
+
+</body>
+</html>
